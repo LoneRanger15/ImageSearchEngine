@@ -9,6 +9,9 @@ let page = 1;
 
 async function searchImage(){
   keyword = searchBox.value;
+
+  searchResult.innerHTML = "";
+  
   const url = `https://api.unsplash.com/search/photos?page=${page}&query=
   ${keyword}&client_id=${accessKey}&per_page=12`;
 
@@ -16,6 +19,12 @@ async function searchImage(){
   const data = await response.json();
 
   const results = data.results;
+
+  if (results.length === 0) {
+    const noResultsMessage = document.createElement("p");
+    noResultsMessage.textContent = "No results found.";
+    searchResult.appendChild(noResultsMessage);
+  }
 
   results.map((result)=> {
     const image = document.createElement("img");
@@ -27,7 +36,11 @@ async function searchImage(){
     imageLink.appendChild(image);
     searchResult.appendChild(imageLink);
   })
-  showMore.style.display = "block";
+  if (data.total_pages > page) {
+    showMore.style.display = "block";
+  } else {
+    showMore.style.display = "none";
+  }
 }
 
 searchForm.addEventListener("submit", (e)=>{
